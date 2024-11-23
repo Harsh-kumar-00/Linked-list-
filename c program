@@ -1,0 +1,207 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct Node
+{
+    int data;
+    struct Node *next;
+};
+struct Node *head = NULL, *newnode, *temp;
+
+void display_list();
+void create_node();
+void insert_at_any_position();
+void delete_any_node();
+
+void main()
+{
+    int option = 1;
+    while (option != 0)
+    {
+        printf("\nMENU:\n1. Create node\n2. Display list\n3. Want to insert a node?\n4. Delete a node!?\n0. Exit\n");
+        scanf("%d", &option);
+        switch (option)
+        {
+        case 1:
+            create_node();
+            break;
+        case 2:
+            display_list();
+            break;
+        case 3:
+            insert_at_any_position();
+            break;
+        case 4:
+            delete_any_node();
+            break;
+        case 0:
+            printf("Exiting...\n");
+            break;
+        default:
+            printf("Invalid option!\n");
+        }
+    }
+}
+
+void create_node()
+{
+    int choice = 1;
+    while (choice)
+    {
+        newnode = (struct Node *)malloc(sizeof(struct Node));
+
+        if (newnode == NULL)
+        {
+            printf("Memory allocation failed! Exiting...\n");
+            exit(1);
+        }
+
+        printf("Enter a node element: ");
+        if (scanf("%d", &newnode->data) != 1)  // Validate input
+        {
+            printf("Invalid input! Please enter an integer.\n");
+            free(newnode);
+            fflush(stdin);  // Clear invalid input buffer
+            continue;
+        }
+        newnode->next = NULL;
+
+        if (head == NULL) // If the list is empty
+        {
+            head = temp = newnode;
+        }
+        else // Add the new node to the end of the list
+        {
+            temp->next = newnode;
+            temp = newnode;
+        }
+
+        // Prompt the user to continue
+        printf("Do you want to continue (0-No, 1-Yes)? ");
+        if (scanf("%d", &choice) != 1 || (choice != 0 && choice != 1))  // Validate choice input
+        {
+            printf("Invalid input! Exiting node creation.\n");
+            free(newnode);  // Free the current node in case of bad input
+            break;
+        }
+    }
+}
+
+
+
+void display_list()
+{
+    if (head == NULL)
+    {
+        printf("List is empty.\n");
+        return;
+    }
+
+    temp = head;
+    printf("Your List is : ");
+    while (temp != NULL)
+    {
+        printf("%d", temp->data);
+        temp = temp->next;
+        if (temp != NULL)
+            printf("->");
+    }
+    printf("->NULL\n");
+}
+
+void insert_at_any_position()
+{
+    int pos, i = 1;
+    newnode = (struct Node *)malloc(sizeof(struct Node));
+    if (newnode == NULL)
+    {
+        printf("Memory allocation failed!\n");
+        return;
+    }
+
+    printf("Enter the value to insert: ");
+    scanf("%d", &newnode->data);
+
+    printf("Enter the position to insert at: ");
+    scanf("%d", &pos);
+
+    if (pos < 1)
+    {
+        printf("Invalid position! Position must be >= 1.\n");
+        free(newnode);
+        return;
+    }
+
+    if (pos == 1)
+    {
+        newnode->next = head;
+        head = newnode;
+        return;
+    }
+
+    temp = head;
+    while (i < pos - 1 && temp != NULL)
+    {
+        temp = temp->next;
+        i++;
+    }
+
+    if (temp == NULL)
+    {
+        printf("Invalid position! Position exceeds the size of the list.\n");
+        free(newnode);
+        return;
+    }
+
+    newnode->next = temp->next;
+    temp->next = newnode;
+}
+
+void delete_any_node()
+{
+    int pos, i = 1;
+    struct Node *prev = NULL;
+
+    printf("Enter the position of the node to delete: ");
+    scanf("%d", &pos);
+
+    if (head == NULL)
+    {
+        printf("List is empty. Nothing to delete.\n");
+        return;
+    }
+
+    if (pos < 1)
+    {
+        printf("Invalid position! Position must be >= 1.\n");
+        return;
+    }
+
+    if (pos == 1)
+    {
+        temp = head;
+        head = head->next;
+        free(temp);
+        printf("Node at position 1 is deleted.\n");
+        return;
+    }
+
+    temp = head;
+    while (i < pos && temp != NULL)
+    {
+        prev = temp;
+        temp = temp->next;
+        i++;
+    }
+
+    if (temp == NULL)
+    {
+        printf("Invalid position! Position exceeds the size of the list.\n");
+        return;
+    }
+
+    prev->next = temp->next;
+    free(temp);
+    printf("Node at position %d is deleted.\n", pos);
+}
